@@ -4,21 +4,17 @@ import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AtSign } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import Container from '@/components/container';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import User from '@/components/user';
-
-const formSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-});
+import { appSchema, type AppFormValues } from './schema';
 
 export default function Page() {
-  const form = useForm({
-    resolver: zodResolver(formSchema),
+  const form = useForm<AppFormValues>({
+    resolver: zodResolver(appSchema),
     mode: 'onChange',
     defaultValues: {
       username: '',
@@ -40,14 +36,14 @@ export default function Page() {
 
   const [submittedUsername, setSubmittedUsername] = useState('');
 
-  const onSubmit = async (data: any) => {
-    setSubmittedUsername(data.username);
+  async function onSubmit(values: AppFormValues) {
     // Simulate async Github API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
+    setSubmittedUsername(values.username);
     setUsers([
       {
-        username: data.username,
+        username: values.username,
         repositories: [
           {
             title: 'awesome-project',
@@ -64,7 +60,7 @@ export default function Page() {
         ],
       },
     ]);
-  };
+  }
 
   return (
     <>
@@ -106,7 +102,7 @@ export default function Page() {
       </Header>
       <Container className="space-y-6 py-6">
         {submittedUsername && (
-          <p className="text-sm font-semibold">Showing users for "{submittedUsername}"</p>
+          <p className="text-sm font-semibold">Showing users for &quot;{submittedUsername}&quot;</p>
         )}
         {users.map((user) => (
           <User key={user.username} username={user.username} repositories={user.repositories} />
