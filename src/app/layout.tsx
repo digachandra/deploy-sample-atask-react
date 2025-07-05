@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
-import Container from '@/components/container';
 import { cn } from '@/lib/utils';
 import './globals.css';
 
@@ -53,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, '!mx-auto min-h-dvh antialiased duration-400')}>
-        <Container>{children}</Container>
+        {children}
       </body>
     </html>
   );
