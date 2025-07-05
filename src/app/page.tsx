@@ -1,13 +1,16 @@
 'use client';
 
+import { useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AtSign } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import Container from '@/components/container';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import User from '@/components/user';
 
 const formSchema = z.object({
   username: z.string().min(1, 'Username is required'),
@@ -28,9 +31,39 @@ export default function Page() {
     control,
   } = form;
 
+  const [users, setUsers] = useState<
+    {
+      username: string;
+      repositories: { title: string; description: string; stars: number; href: string }[];
+    }[]
+  >([]);
+
+  const [submittedUsername, setSubmittedUsername] = useState('');
+
   const onSubmit = async (data: any) => {
+    setSubmittedUsername(data.username);
     // Simulate async Github API call
     await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    setUsers([
+      {
+        username: data.username,
+        repositories: [
+          {
+            title: 'awesome-project',
+            description: 'A description of awesome-project.',
+            stars: 128,
+            href: 'https://github.com/example/awesome-project',
+          },
+          {
+            title: 'nextjs-blog',
+            description: 'A blog starter built with Next.js.',
+            stars: 256,
+            href: 'https://github.com/example/nextjs-blog',
+          },
+        ],
+      },
+    ]);
   };
 
   return (
@@ -48,7 +81,12 @@ export default function Page() {
                       <AtSign className="text-muted-foreground h-4 w-4" />
                     </span>
                     <FormControl>
-                      <Input placeholder="Type github username" className="pl-9" {...field} />
+                      <Input
+                        placeholder="Type github username"
+                        className="pl-9"
+                        {...field}
+                        disabled={isSubmitting}
+                      />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -66,6 +104,14 @@ export default function Page() {
           </form>
         </Form>
       </Header>
+      <Container className="space-y-6 py-6">
+        {submittedUsername && (
+          <p className="text-sm font-semibold">Showing users for "{submittedUsername}"</p>
+        )}
+        {users.map((user) => (
+          <User key={user.username} username={user.username} repositories={user.repositories} />
+        ))}
+      </Container>
     </>
   );
 }
