@@ -60,8 +60,8 @@ export async function POST(req: NextRequest) {
 
   const users = json.data.search.nodes.map((user: GithubUserNode) => ({
     username: user.login,
-    repositories: user.repositories.nodes.map((repo: GithubUserRepoNode) => ({
-      title: repo.name,
+    repositories: user?.repositories?.nodes.map((repo: GithubUserRepoNode) => ({
+      name: repo.name,
       description: repo.description,
       stars: repo.stargazerCount,
       url: repo.url,
