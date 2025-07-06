@@ -2,6 +2,20 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 
+type GithubUserRepoNode = {
+  name: string;
+  description: string;
+  stargazerCount: number;
+  url: string;
+};
+
+type GithubUserNode = {
+  login: string;
+  repositories: {
+    nodes: GithubUserRepoNode[];
+  };
+};
+
 export async function POST(req: NextRequest) {
   const { keyword } = await req.json();
   const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -44,13 +58,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'GitHub API error', details: json.errors }, { status: 500 });
   }
 
-  const users = json.data.search.nodes.map((user: any) => ({
+  const users = json.data.search.nodes.map((user: GithubUserNode) => ({
     username: user.login,
-    repositories: user.repositories.nodes.map((repo: any) => ({
+    repositories: user.repositories.nodes.map((repo: GithubUserRepoNode) => ({
       title: repo.name,
       description: repo.description,
       stars: repo.stargazerCount,
-      href: repo.url,
+      url: repo.url,
     })),
   }));
 

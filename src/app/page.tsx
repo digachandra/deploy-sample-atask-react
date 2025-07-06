@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import User from '@/components/user';
 import { cn } from '@/lib/utils';
 import { appSchema, type AppFormValues } from './schema';
+import type { UserNode } from './types/user';
 
 export default function Page() {
   const form = useForm<AppFormValues>({
@@ -28,12 +29,7 @@ export default function Page() {
     control,
   } = form;
 
-  const [users, setUsers] = useState<
-    {
-      username: string;
-      repositories: { title: string; description: string; stars: number; href: string }[];
-    }[]
-  >([]);
+  const [users, setUsers] = useState<UserNode[]>([]);
   const [submittedUsername, setSubmittedUsername] = useState<string>('');
   const [isError, setIsError] = useState<boolean>(false);
 

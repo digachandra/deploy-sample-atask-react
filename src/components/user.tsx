@@ -1,22 +1,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
+import type { UserNode, UserRepoNode } from '@/app/types/user';
 import { ChevronDown, ExternalLink, Star } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardAction } from './ui/card';
 
-type RepositoryProps = {
-  title: string;
-  description: string;
-  stars: number;
-  href: string;
-};
-
-function Repository({ title, description, stars, href }: RepositoryProps) {
+function Repository({ name, description, stars, url }: UserRepoNode) {
   return (
     <Card className="rounded-none border-0 bg-transparent shadow-none [&:nth-child(n+2)]:border-t">
       <CardHeader>
         <CardTitle className="flex gap-1" data-testid="user-repo-title">
-          <Link href={href} target="_blank" rel="noreferrer">
-            {title}
+          <Link href={url} target="_blank" rel="noreferrer">
+            {name}
           </Link>
           <ExternalLink className="h-4 w-4" />
         </CardTitle>
@@ -32,12 +26,7 @@ function Repository({ title, description, stars, href }: RepositoryProps) {
   );
 }
 
-type UserProps = {
-  username: string;
-  repositories: RepositoryProps[];
-};
-
-export default function User({ username, repositories }: UserProps) {
+export default function User({ username, repositories }: UserNode) {
   const [isOpen, setIsOpen] = useState(false);
   const hasRepos = repositories.length > 0;
 
@@ -60,13 +49,13 @@ export default function User({ username, repositories }: UserProps) {
       {isOpen && (
         <CardContent data-testid={`user-${username}-repos`}>
           <div className="overflow-hidden rounded-xl border bg-gray-50">
-            {repositories.map((repo) => (
+            {repositories.map((repo, index) => (
               <Repository
-                key={repo.href}
-                title={repo.title}
+                key={`user-${username}-${index + 1}`}
+                name={repo.name}
                 description={repo.description}
                 stars={repo.stars}
-                href={repo.href}
+                url={repo.url}
               />
             ))}
           </div>
