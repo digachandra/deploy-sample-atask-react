@@ -10,7 +10,9 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import User from '@/components/user';
+import { cn } from '@/lib/utils';
 import { appSchema, type AppFormValues } from './schema';
+import type { UserNode } from './types/user';
 
 export default function Page() {
   const form = useForm<AppFormValues>({
@@ -27,40 +29,37 @@ export default function Page() {
     control,
   } = form;
 
-  const [users, setUsers] = useState<
-    {
-      username: string;
-      repositories: { title: string; description: string; stars: number; href: string }[];
-    }[]
-  >([]);
+  const [users, setUsers] = useState<UserNode[]>([]);
+  const [submittedUsername, setSubmittedUsername] = useState<string>('');
+  const [isError, setIsError] = useState<boolean>(false);
 
-  const [submittedUsername, setSubmittedUsername] = useState('');
+  const fetchUsersAndRepos = async (keyword: string) => {
+    const response = await fetch('/api/github', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ keyword }),
+    });
 
-  async function onSubmit(values: AppFormValues) {
-    // Simulate async Github API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    if (!response.ok) {
+      throw new Error('Failed to fetch');
+    }
 
-    setSubmittedUsername(values.username);
-    setUsers([
-      {
-        username: values.username,
-        repositories: [
-          {
-            title: 'awesome-project',
-            description: 'A description of awesome-project.',
-            stars: 128,
-            href: 'https://github.com/example/awesome-project',
-          },
-          {
-            title: 'nextjs-blog',
-            description: 'A blog starter built with Next.js.',
-            stars: 256,
-            href: 'https://github.com/example/nextjs-blog',
-          },
-        ],
-      },
-    ]);
-  }
+    return await response.json();
+  };
+
+  const onSubmit = async (data: AppFormValues) => {
+    try {
+      setIsError(false);
+      setSubmittedUsername(data.username);
+      setUsers([]);
+
+      const usersWithRepos = await fetchUsersAndRepos(data.username);
+      setUsers(usersWithRepos);
+    } catch {
+      setIsError(true);
+      setUsers([]);
+    }
+  };
 
   return (
     <>
@@ -77,12 +76,7 @@ export default function Page() {
                       <AtSign className="text-muted-foreground h-4 w-4" />
                     </span>
                     <FormControl>
-                      <Input
-                        placeholder="Type github username"
-                        className="pl-9"
-                        {...field}
-                        disabled={isSubmitting}
-                      />
+                      <Input placeholder="Type github username" className="pl-9" {...field} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -100,9 +94,17 @@ export default function Page() {
           </form>
         </Form>
       </Header>
-      <Container className="space-y-6 py-6">
+      <Container className="space-y-4 py-6">
         {submittedUsername && (
-          <p className="text-sm font-semibold">Showing users for &quot;{submittedUsername}&quot;</p>
+          <p className={cn('text-sm font-semibold', isError && 'text-destructive')}>
+            {isSubmitting
+              ? `Searching users for "@${submittedUsername}"...`
+              : !isError
+                ? users.length > 0
+                  ? `Showing users for "@${submittedUsername}"`
+                  : `No result for "@${submittedUsername}"`
+                : `Unable to fetch GitHub data for "@${submittedUsername}". Please try again later.`}
+          </p>
         )}
         {users.map((user) => (
           <User key={user.username} username={user.username} repositories={user.repositories} />
