@@ -51,7 +51,7 @@ export default function User({ username, repositories }: UserNode) {
           <div className="overflow-hidden rounded-xl border bg-gray-50">
             {repositories.map((repo, index) => (
               <Repository
-                key={`user-${username}-${index + 1}`}
+                key={`user-${username}-repo-${index + 1}`}
                 name={repo.name}
                 description={repo.description}
                 stars={repo.stars}

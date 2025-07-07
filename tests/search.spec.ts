@@ -111,7 +111,7 @@ test.describe('Github username searching', () => {
       timeout: 2500,
     });
     await expect(
-      page.getByText(/Unable to fetch GitHub data for "@test"\. Please try again later\./)
+      page.getByText(/Unable to fetch or render GitHub data for "@test"\. Please try again later\./)
     ).toBeVisible({ timeout: 5000 });
   });
 });

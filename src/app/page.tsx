@@ -1,20 +1,23 @@
 'use client';
 
 import { useState } from 'react';
+import type { UserNode } from '@/app/types/user';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AtSign } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import Container from '@/components/container';
 import Header from '@/components/header';
+import SearchResults from '@/components/search-results';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import User from '@/components/user';
-import { cn } from '@/lib/utils';
 import { appSchema, type AppFormValues } from './schema';
-import type { UserNode } from './types/user';
 
 export default function Page() {
+  const [users, setUsers] = useState<UserNode[]>([]);
+  const [submittedUsername, setSubmittedUsername] = useState<string>('');
+  const [isError, setIsError] = useState<boolean>(false);
+
   const form = useForm<AppFormValues>({
     resolver: zodResolver(appSchema),
     mode: 'onChange',
@@ -28,10 +31,6 @@ export default function Page() {
     formState: { isValid, isSubmitting },
     control,
   } = form;
-
-  const [users, setUsers] = useState<UserNode[]>([]);
-  const [submittedUsername, setSubmittedUsername] = useState<string>('');
-  const [isError, setIsError] = useState<boolean>(false);
 
   const fetchUsersAndRepos = async (keyword: string) => {
     const response = await fetch('/api/github', {
@@ -95,20 +94,12 @@ export default function Page() {
         </Form>
       </Header>
       <Container className="space-y-4 py-6">
-        {submittedUsername && (
-          <p className={cn('text-sm font-semibold', isError && 'text-destructive')}>
-            {isSubmitting
-              ? `Searching users for "@${submittedUsername}"...`
-              : !isError
-                ? users.length > 0
-                  ? `Showing users for "@${submittedUsername}"`
-                  : `No result for "@${submittedUsername}"`
-                : `Unable to fetch GitHub data for "@${submittedUsername}". Please try again later.`}
-          </p>
-        )}
-        {users.map((user) => (
-          <User key={user.username} username={user.username} repositories={user.repositories} />
-        ))}
+        <SearchResults
+          isLoading={isSubmitting}
+          isError={isError}
+          username={submittedUsername}
+          users={users}
+        />
       </Container>
     </>
   );
