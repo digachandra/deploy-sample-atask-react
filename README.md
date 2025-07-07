@@ -8,13 +8,13 @@ A minimal GitHub repository explorer built with Next.js, integrated with GitHub'
 
 ## Screenshots
 
-| Initial                                     | Success                                     |
-| ------------------------------------------- | ------------------------------------------- |
-| ![Initial](./screenshots/initial-state.png) | ![Success](./screenshots/success-state.png) |
+| Initial                                                                              | Success                                                                              |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| ![Initial](https://sample-atask-react.digachandra.com/screenshots/initial-state.png) | ![Success](https://sample-atask-react.digachandra.com/screenshots/success-state.png) |
 
-| Not Found                                       | Error                                   |
-| ----------------------------------------------- | --------------------------------------- |
-| ![Not Found](./screenshots/not-found-state.png) | ![Error](./screenshots/error-state.png) |
+| Not Found                                                                                | Error                                                                            |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| ![Not Found](https://sample-atask-react.digachandra.com/screenshots/not-found-state.png) | ![Error](https://sample-atask-react.digachandra.com/screenshots/error-state.png) |
 
 ## Features Roadmap
 
