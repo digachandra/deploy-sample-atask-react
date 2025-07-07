@@ -21,7 +21,7 @@ function ResultLoading({ username }: { username: string }) {
 
 function ResultError({ username }: { username: string }) {
   const message = `Unable to fetch or render GitHub data for "@${username}". Please try again later.`;
-  return <ResultMessage text={message} />;
+  return <ResultMessage text={message} className="text-destructive" />;
 }
 
 function ResultNotFound({ username }: { username: string }) {
